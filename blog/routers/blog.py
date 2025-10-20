@@ -5,14 +5,18 @@ from blog.database import get_db
 from blog import models
 from sqlalchemy.orm import Session
 from blog.hasing import Hash
+from blog.repository import blog
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/blog",
+    tags=["blogs"]
+)
 
-@router.get('/blog', response_model=List[ShowBlog], tags=["blogs"])
+@router.get('/', response_model=List[ShowBlog])
 def get_all(db: Session = Depends(get_db)):
     return db.query(models.Blog).all()
 
-@router.post('/blog', status_code=status.HTTP_201_CREATED, tags=["blogs"])
+@router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: Blog, db: Session = Depends(get_db)):
     new_blog = models.Blog(title=request.title, body = request.body, user_id = 1)
     db.add(new_blog)
@@ -21,7 +25,7 @@ def create(request: Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@router.get('/blog/{id}', status_code=status.HTTP_200_OK, response_model=ShowBlog, tags=["blogs"])
+@router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ShowBlog)
 def show(id,response:Response, db:Session = Depends(get_db)):
 
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
@@ -30,7 +34,7 @@ def show(id,response:Response, db:Session = Depends(get_db)):
         return {'detail': f"blog with id {id} is not available"}
     return blog
 
-@router.delete('/blog/{id}', status_code=status.HTTP_204_NO_CONTENT, tags=["blogs"])
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def destroy(id, db:Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
@@ -39,7 +43,7 @@ def destroy(id, db:Session = Depends(get_db)):
     db.commit()
     return "deleted successfully"
 
-@router.put('/blog/{id}', status_code=status.HTTP_202_ACCEPTED, tags=["blogs"])
+@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id, request: Blog, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
