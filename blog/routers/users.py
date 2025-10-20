@@ -4,7 +4,7 @@ from typing import List
 from blog.database import get_db
 from blog import models
 from sqlalchemy.orm import Session
-from blog.hasing import Hash
+from blog.hashing import Hash
 
 router = APIRouter(
     tags=["user"],
