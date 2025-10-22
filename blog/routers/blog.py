@@ -21,7 +21,7 @@ def create(request: Blog, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_blog)
     return new_blog
-
+    
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ShowBlog)
 def show(id,response:Response, db:Session = Depends(get_db)):

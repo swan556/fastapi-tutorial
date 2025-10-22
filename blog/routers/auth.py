@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from blog import schemas, database, models
 from sqlalchemy.orm import Session
 from blog.hashing import Hash
+from blog.JWTtoken import  create_access_token
 
 router = APIRouter(
     tags=["auth"]
@@ -22,4 +23,6 @@ def login(request: schemas.Login, db: Session = Depends(database.get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"incorrect password"
         )
-    return user
+    
+    access_token = create_access_token(data = {"sub": user.email})
+    return {"access token": access_token, "token type": "bearer"}
